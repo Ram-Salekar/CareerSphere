@@ -1,0 +1,23 @@
+﻿using CareerSphere.Utility.UtilityModels;
+using CareerSphere.Models.PostTableModel;
+
+namespace CareerSphere.Models.UserTableModel
+{
+    public class User : AuditFields
+    {
+       
+        public Guid id { get; set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
+        public DateTime dateOfBirth { get; set; }
+        public string? profileImageUrl { get; set; }
+        public string? about { get; set; }
+        public string? header {get; set; }
+        public string username { get; set; }
+        public string email { get; set; }
+        public string passwordHash { get; set; }
+
+        public IEnumerable<Post>? Posts { get; set; } = new List<Post>();
+        
+    }
+}
