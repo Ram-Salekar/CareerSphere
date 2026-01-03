@@ -1,8 +1,11 @@
-﻿using CareerSphere.ApiModels.PostApiModels;
+﻿using AutoMapper;
+using CareerSphere.ApiModels.AuthModels;
+using CareerSphere.ApiModels.PostApiModels;
 using CareerSphere.ApiModels.UsersApiModels;
 using CareerSphere.Data;
 using CareerSphere.Models.PostTableModel;
 using CareerSphere.Models.UserTableModel;
+using CareerSphere.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 namespace CareerSphere.Repository.UserRepoFolder
@@ -11,10 +14,14 @@ namespace CareerSphere.Repository.UserRepoFolder
 
     {
         private readonly AppDbContext _dbContext;
+        private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
-        public UserRepo(AppDbContext dbContext)
+        public UserRepo(AppDbContext dbContext , ITokenService tokenService , IMapper mapper)
         {
             _dbContext = dbContext;
+            _tokenService = tokenService;
+            _mapper = mapper;
         }
         public async Task<List<UserResponseApiModel>> GetUsersAsync()
         {
@@ -140,9 +147,36 @@ namespace CareerSphere.Repository.UserRepoFolder
             return true;
         }
         
-            
+        public async Task<string ?> getToken(LoginApiModel detail)
+        {
+            var user = await _dbContext.Users
+                                        .FirstOrDefaultAsync(u => u.email == detail.emailOrUsername ||
+                                        u.username == detail.emailOrUsername);
+            if (user == null)
+            {
+                return null;
+            }
+            var hasher = new PasswordHasher<User>();
+            var result = hasher.VerifyHashedPassword(user, user.passwordHash, detail.password);
+            if (result == PasswordVerificationResult.Failed)
+            {
+                return null;
+            }
+           return  _tokenService.CreateToken(user);
+        }
 
+        public async Task<UserResponseApiModel?> GetUserByEmailOrUserName(string emailOrUsername)
+        {
+            var user = _dbContext.Users.FirstOrDefault(u => u.email == emailOrUsername ||
+                                        u.username == emailOrUsername);
+            if (user == null)
+            {
+                return null;
 
+            }
+            return _mapper.Map<UserResponseApiModel>(user);
+
+        } 
     }
     }
 

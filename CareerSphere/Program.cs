@@ -2,8 +2,11 @@ using CareerSphere.Data;
 using CareerSphere.Repository.PostRepos;
 using CareerSphere.Repository.UserRepoFolder;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
+using CareerSphere.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +18,35 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 );
 
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IPostRepo , PostRepo>();
 builder.Services.AddScoped<IUser, UserRepo>();
+builder.Services.AddScoped<ITokenService, Tokenservice>();
+
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var secretKey = jwtSettings["Key"];
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(secretKey!)
+        )
+    };
+});
 
 
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -37,8 +67,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
+
+
 
 app.MapControllers();
 

@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CareerSphere.ApiModels.PostApiModels;
 using CareerSphere.Repository.PostRepos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CareerSphere.Controllers
 {
+    [Authorize]
     [ApiController]
     public class PostController : Controller
     {

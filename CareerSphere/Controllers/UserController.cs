@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CareerSphere.ApiModels.UsersApiModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CareerSphere.Controllers
 {
+    
     [ApiController]
     public class UserController : Controller
     {
@@ -49,6 +51,18 @@ namespace CareerSphere.Controllers
             var user = await _userRepo.CreateUserAsync(userCreateApiModel);
             return Ok(user);
         }
+
+        [HttpGet("api/users/emailorusername")]
+        public async Task<IActionResult> GetUserByEmailOrUserName([FromQuery] string emailOrUsername)
+        {
+            var user = await _userRepo.GetUserByEmailOrUserName(emailOrUsername);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
         
     }
 }
