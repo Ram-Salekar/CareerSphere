@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using CareerSphere.ApiModels.UsersApiModels;
 
 namespace CareerSphere.Controllers
 {
@@ -18,6 +19,35 @@ namespace CareerSphere.Controllers
         {
             var users = await _userRepo.GetUsersAsync();
             return Ok(users);
+        }
+
+        [HttpGet("api/users/{id}")]
+        public async Task<IActionResult> GetUserByIdAsync(Guid id)
+        {
+            var user = await _userRepo.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
+        [HttpGet("api/users/{id}/username")]
+        public async Task<IActionResult> GetUserNameAsync(Guid id)
+        {
+            var username = await _userRepo.GetUserName(id);
+            if (username == null)
+            {
+                return NotFound();
+            }
+            return Ok(username);
+        }
+
+        [HttpPost("api/users")]
+        public async Task<IActionResult> CreateUserAsync([FromBody] UserCreateApiModel userCreateApiModel)
+        {
+            var user = await _userRepo.CreateUserAsync(userCreateApiModel);
+            return Ok(user);
         }
         
     }

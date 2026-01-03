@@ -1,5 +1,5 @@
 using CareerSphere.Data;
-using CareerSphere.Repository;
+using CareerSphere.Repository.PostRepos;
 using CareerSphere.Repository.UserRepoFolder;
 using Microsoft.EntityFrameworkCore;
 

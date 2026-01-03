@@ -2,7 +2,7 @@
 
 namespace CareerSphere.ApiModels.UsersApiModels
 {
-    public class UserCreateApiModel : AuditFields
+    public class UserCreateApiModel 
     {
         public string firstName { get; set; }
         public string lastName { get; set; }
@@ -14,6 +14,7 @@ namespace CareerSphere.ApiModels.UsersApiModels
 
         public string username { get; set; }
         public string email { get; set; }
+        public string password { get; set; }
 
 
     }
