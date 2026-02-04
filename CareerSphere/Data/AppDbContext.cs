@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using CareerSphere.Models.UserTableModel;
 using CareerSphere.Models.PostTableModel;
+using CareerSphere.Models.ConnectionTableModel;
 
 
 namespace CareerSphere.Data
@@ -13,7 +14,7 @@ namespace CareerSphere.Data
         }
          public DbSet<User> Users { get; set; }
          public DbSet<Post> Posts { get; set; }
-       
+         public DbSet<Connection> Connections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +31,21 @@ namespace CareerSphere.Data
                 .WithOne(p => p.user)
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Connection>()
+                .HasKey(c => new { c.followerId, c.followingId });
+
+            modelBuilder.Entity<Connection>()
+                .HasOne(c => c.follower)
+                .WithMany(u => u.followings)
+                .HasForeignKey(c => c.followerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Connection>()
+                .HasOne(c => c.following)
+                .WithMany(u => u.followers)
+                .HasForeignKey(c => c.followingId)
+                .OnDelete(DeleteBehavior.Restrict);
 
                
                

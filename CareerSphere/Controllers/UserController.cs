@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CareerSphere.ApiModels.UsersApiModels;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace CareerSphere.Controllers
 {
-    
+    [Authorize]  
     [ApiController]
     public class UserController : Controller
     {
@@ -45,12 +47,7 @@ namespace CareerSphere.Controllers
             return Ok(username);
         }
 
-        [HttpPost("api/users")]
-        public async Task<IActionResult> CreateUserAsync([FromBody] UserCreateApiModel userCreateApiModel)
-        {
-            var user = await _userRepo.CreateUserAsync(userCreateApiModel);
-            return Ok(user);
-        }
+       
 
         [HttpGet("api/users/emailorusername")]
         public async Task<IActionResult> GetUserByEmailOrUserName([FromQuery] string emailOrUsername)
@@ -63,6 +60,28 @@ namespace CareerSphere.Controllers
             return Ok(user);
         }
 
+        [HttpGet("api/users/LoginedUser")]
+        public async Task<IActionResult> GetCurrentUserAsync()
+        {
+            var claimsPrincipal = User;
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userRepo.GetUserByIdAsync(Guid.Parse(userId));
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
+        [HttpPut("api/users/editdetails")]
+        public async Task <IActionResult> updateCurrentUser([FromBody]UserCreateApiModel user)
+        {
+            Guid id = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var result = await _userRepo.UpdateUserAsync(id,user);
+            return Ok(result);
+        }
         
     }
 }

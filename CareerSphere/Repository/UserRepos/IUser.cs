@@ -2,6 +2,7 @@
 using CareerSphere.ApiModels.PostApiModels;
 using CareerSphere.ApiModels.UsersApiModels;
 
+
 namespace CareerSphere.Repository.UserRepoFolder
 {
     public interface IUser
@@ -12,6 +13,7 @@ namespace CareerSphere.Repository.UserRepoFolder
         public Task<Boolean> CreateUserAsync(UserCreateApiModel userCreateApiModel);
         public Task<string ?> getToken (LoginApiModel detail);
         public Task<UserResponseApiModel?>GetUserByEmailOrUserName(string emailOrUsername);
+        public Task<bool> UpdateUserAsync(Guid id,UserCreateApiModel user);
 
 
     }

@@ -22,6 +22,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IPostRepo , PostRepo>();
 builder.Services.AddScoped<IUser, UserRepo>();
 builder.Services.AddScoped<ITokenService, Tokenservice>();
+builder.Services.AddScoped<CareerSphere.Repository.ConnectionRepos.IConnectionRepo, CareerSphere.Repository.ConnectionRepos.ConnectionRepos>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Key"];

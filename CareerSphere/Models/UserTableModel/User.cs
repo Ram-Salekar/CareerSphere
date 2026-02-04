@@ -1,5 +1,6 @@
 ﻿using CareerSphere.Utility.UtilityModels;
 using CareerSphere.Models.PostTableModel;
+using CareerSphere.Models.ConnectionTableModel;
 
 namespace CareerSphere.Models.UserTableModel
 {
@@ -18,6 +19,9 @@ namespace CareerSphere.Models.UserTableModel
         public string passwordHash { get; set; }
 
         public IEnumerable<Post>? Posts { get; set; } = new List<Post>();
+
+        public IEnumerable<Connection>? followers { get; set; } = new List<Connection>();
+        public IEnumerable<Connection>? followings { get; set; } = new List<Connection>();
         
     }
 }

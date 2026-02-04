@@ -177,6 +177,33 @@ namespace CareerSphere.Repository.UserRepoFolder
             return _mapper.Map<UserResponseApiModel>(user);
 
         } 
+
+        public async Task<Boolean> UpdateUserAsync(Guid id,UserCreateApiModel user)
+        {
+            var updatedUser = await _dbContext.Users.FindAsync(id);
+            if(updatedUser != null)
+            {
+                var hasher = new PasswordHasher<User>();
+                updatedUser.firstName = user.firstName;
+                updatedUser.lastName = user.lastName;
+                updatedUser.dateOfBirth = user.dateOfBirth;
+                updatedUser.profileImageUrl = user.profileImageUrl;
+                updatedUser.about = user.about;
+                updatedUser.header = user.header;
+                updatedUser.username = user.username;
+                updatedUser.passwordHash = user.password;
+                updatedUser.email = user.email;
+                updatedUser.modifiedBy = user.username;
+                updatedUser.lastmodifiedAt = DateTime.Now;
+                updatedUser.passwordHash = hasher.HashPassword(updatedUser, updatedUser.passwordHash);
+                await _dbContext.SaveChangesAsync();
+                return true;
+
+            }
+
+            return false;
+
+        }
     }
     }
 

@@ -1,4 +1,5 @@
 ﻿using CareerSphere.ApiModels.AuthModels;
+using CareerSphere.ApiModels.UsersApiModels;
 using CareerSphere.Repository.UserRepoFolder;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,20 @@ namespace CareerSphere.Controllers
             _userRepo = userRepo;
         }
 
-        [HttpPost ("login")]
+        [HttpPost ("api/login")]
         public async Task<IActionResult> getToken(LoginApiModel detail)
         {
             var token = await _userRepo.getToken(detail);
             return Ok(token);
         }
+
+        [HttpPost("api/register")]
+        public async Task<IActionResult> CreateUserAsync([FromBody] UserCreateApiModel userCreateApiModel)
+        {
+            var user = await _userRepo.CreateUserAsync(userCreateApiModel);
+            return Ok(user);
+        }
+      
+
     }
 }

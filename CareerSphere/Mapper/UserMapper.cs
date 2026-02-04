@@ -8,7 +8,7 @@ namespace CareerSphere.Mapper
     {
         public UserMapper()
         {
-            CreateMap<User,UserResponseApiModel>().ReverseMap().ForMember(dest => dest.passwordHash , opt => opt.Ignore());
+            CreateMap<User,UserResponseApiModel>().ForMember(dest => dest.passwordHash , opt => opt.Ignore());
         }
     }
 }
