@@ -1,6 +1,7 @@
 ﻿using CareerSphere.Utility.UtilityModels;
 using CareerSphere.Models.PostTableModel;
 using CareerSphere.Models.ConnectionTableModel;
+using CareerSphere.Models.MessageTableModel;
 
 namespace CareerSphere.Models.UserTableModel
 {
@@ -22,6 +23,7 @@ namespace CareerSphere.Models.UserTableModel
 
         public IEnumerable<Connection>? followers { get; set; } = new List<Connection>();
         public IEnumerable<Connection>? followings { get; set; } = new List<Connection>();
-        
+        public ICollection<Conversation> Conversations { get; set; } = new List<Conversation>();
+
     }
 }

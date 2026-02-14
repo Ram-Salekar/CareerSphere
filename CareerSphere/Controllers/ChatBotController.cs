@@ -1,26 +1,31 @@
-﻿using CareerSphere.Services.AiChatBotService;
+﻿using CareerSphere.ApiModels.ChatBotApiModel;
+using CareerSphere.Manager.ChatBotManager;
+using CareerSphere.Services.AiChatBotService;
 using CareerSphere.Services.FileReader;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CareerSphere.Controllers
 {
+    [Authorize]
     [ApiController]
     public class ChatBotController : Controller
     {
-        private readonly IOpenRouterService _openRouterService;
-        private readonly IFileReader _fileReader;
+       private readonly IChatBotManager _chatBotManager;
 
-        public ChatBotController(IOpenRouterService openRouterService, IFileReader fileReader)
+        public ChatBotController(IChatBotManager chatBotManager)
         {
-            _openRouterService = openRouterService;
-            _fileReader = fileReader;
+            _chatBotManager = chatBotManager;
 
         }
 
         [HttpPost("api/chatbot/respond")]
-        public async Task<IActionResult> GetChatBotResponse([FromBody] string message)
+        public async Task<IActionResult> GetChatBotResponse([FromBody] MessagePostApiModel message)
         {
-            var response = await _openRouterService.GetResponseModel(message);
+            Guid userId = User.FindFirstValue(ClaimTypes.NameIdentifier) != null ? Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) : Guid.Empty;
+
+            var response = await _chatBotManager.GetChatBotResponse(message,userId);
             return Ok(response);
         }
 
@@ -33,35 +38,13 @@ namespace CareerSphere.Controllers
             if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
                 return BadRequest("Only PDF allowed.");
 
-            string extractedText;
+            Guid userId = User.FindFirstValue(ClaimTypes.NameIdentifier) != null ? Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) : Guid.Empty;
 
-            using (var stream = file.OpenReadStream())
-            {
-                extractedText = _fileReader.ExtractTextFromPdf(stream);
-            }
-
-            var response = await _openRouterService.ResumeAnalyzingAgent(extractedText);
+            var response = await _chatBotManager.ResumeAnalyzingAgent(file,userId);
             return Ok(response);
             
         }
 
-        [HttpPost("api/pdfData")]
-        public async Task<IActionResult> Upload(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded.");
-
-            if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
-                return BadRequest("Only PDF allowed.");
-
-            string extractedText;
-
-            using (var stream = file.OpenReadStream())
-            {
-                extractedText = _fileReader.ExtractTextFromPdf(stream);
-            }
-
-            return Ok(extractedText);
-        }
+      
     }
 }

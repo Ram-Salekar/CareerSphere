@@ -2,6 +2,7 @@
 using CareerSphere.Models.UserTableModel;
 using CareerSphere.Models.PostTableModel;
 using CareerSphere.Models.ConnectionTableModel;
+using CareerSphere.Models.MessageTableModel;
 
 
 namespace CareerSphere.Data
@@ -15,6 +16,8 @@ namespace CareerSphere.Data
          public DbSet<User> Users { get; set; }
          public DbSet<Post> Posts { get; set; }
          public DbSet<Connection> Connections { get; set; }
+         public DbSet<Conversation> Conversations { get; set; }
+            public DbSet<MessageModel> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,6 +49,25 @@ namespace CareerSphere.Data
                 .WithMany(u => u.followers)
                 .HasForeignKey(c => c.followingId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Conversation>()
+            .HasKey(c => c.conversationId);
+
+            modelBuilder.Entity<Conversation>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.Conversations)
+                .HasForeignKey(c => c.userId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<MessageModel>()
+                .HasKey(m => m.messageId);
+
+            modelBuilder.Entity<MessageModel>()
+                .HasOne(m => m.conversation)
+                .WithMany(c => c.messages)
+                .HasForeignKey(m => m.conversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
 
                
                

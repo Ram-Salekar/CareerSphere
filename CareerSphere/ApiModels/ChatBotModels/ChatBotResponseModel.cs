@@ -1,4 +1,4 @@
-﻿namespace CareerSphere.Utility.ChatBotModels
+﻿namespace CareerSphere.ApiModels.ChatBotModels
 {
     public class ChatBotResponseModel
     {

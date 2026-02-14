@@ -1,10 +1,11 @@
-﻿using CareerSphere.Utility.ChatBotModels;
+﻿using CareerSphere.ApiModels.ChatBotApiModel;
+using CareerSphere.ApiModels.ChatBotModels;
 
 namespace CareerSphere.Services.AiChatBotService
 {
     public interface IOpenRouterService
     {
-        public Task<string>GetResponseModel(string message);
+        public Task<MessageResponseApiModel>GetResponseModel(string message, Guid conversationId);
         public Task<string> ResumeAnalyzingAgent(string resume);
     }
 }

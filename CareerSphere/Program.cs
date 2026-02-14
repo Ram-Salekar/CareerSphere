@@ -9,6 +9,9 @@ using System.Text.Json.Serialization;
 using CareerSphere.Services;
 using CareerSphere.Services.AiChatBotService;
 using CareerSphere.Services.FileReader;
+using CareerSphere.Manager.ChatBotManager;
+using CareerSphere.Repository.MessageRepos;
+using CareerSphere.Repository.ConversationRepos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +30,11 @@ builder.Services.AddScoped<ITokenService, Tokenservice>();
 builder.Services.AddHttpClient<IOpenRouterService, OpenRouterService>();
 builder.Services.AddScoped<CareerSphere.Repository.ConnectionRepos.IConnectionRepo, CareerSphere.Repository.ConnectionRepos.ConnectionRepos>();
 builder.Services.AddSingleton<IFileReader, FileReader>();
+builder.Services.AddScoped<IChatBotManager, ChatBotManager>();
+builder.Services.AddTransient<IMessage, MessageRepo>();
+builder.Services.AddTransient<IConversation, ConversationRepo>();
+
+
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Key"];
 
