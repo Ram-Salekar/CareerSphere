@@ -7,6 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 using CareerSphere.Services;
+using CareerSphere.Services.AiChatBotService;
+using CareerSphere.Services.FileReader;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +24,9 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IPostRepo , PostRepo>();
 builder.Services.AddScoped<IUser, UserRepo>();
 builder.Services.AddScoped<ITokenService, Tokenservice>();
+builder.Services.AddHttpClient<IOpenRouterService, OpenRouterService>();
 builder.Services.AddScoped<CareerSphere.Repository.ConnectionRepos.IConnectionRepo, CareerSphere.Repository.ConnectionRepos.ConnectionRepos>();
-
+builder.Services.AddSingleton<IFileReader, FileReader>();
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Key"];
 
@@ -48,7 +51,16 @@ builder.Services.AddAuthentication(options =>
         )
     };
 });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -68,6 +80,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
