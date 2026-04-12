@@ -2,6 +2,7 @@
 using CareerSphere.Models.PostTableModel;
 using CareerSphere.Models.ConnectionTableModel;
 using CareerSphere.Models.MessageTableModel;
+using CareerSphere.Models.EducationTableModel;
 
 namespace CareerSphere.Models.UserTableModel
 {
@@ -20,10 +21,11 @@ namespace CareerSphere.Models.UserTableModel
         public string passwordHash { get; set; }
 
         public IEnumerable<Post>? Posts { get; set; } = new List<Post>();
-
         public IEnumerable<Connection>? followers { get; set; } = new List<Connection>();
         public IEnumerable<Connection>? followings { get; set; } = new List<Connection>();
         public ICollection<Conversation> Conversations { get; set; } = new List<Conversation>();
+        public ICollection<Education>Educations { get; set; } = new List<Education>();
+        public ICollection<Experience> Experiences { get; set; } = new List<Experience>();
 
     }
 }

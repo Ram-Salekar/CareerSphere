@@ -1,4 +1,6 @@
 ﻿using CareerSphere.ApiModels.ChatBotApiModel;
+using CareerSphere.ApiModels.JSearchApiModels;
+using CareerSphere.Manager.JobManager;
 using CareerSphere.Repository.ConversationRepos;
 using CareerSphere.Repository.MessageRepos;
 using CareerSphere.Services.AiChatBotService;
@@ -12,13 +14,15 @@ namespace CareerSphere.Manager.ChatBotManager
         private readonly IFileReader _fileReader;
         private readonly IMessage messageRepo;
         private readonly IConversation conversationRepo;
+        private readonly IJobManager jobManager;
 
-        public ChatBotManager(IOpenRouterService openRouterService, IFileReader fileReader, IMessage message, IConversation conversation)
+        public ChatBotManager(IOpenRouterService openRouterService, IFileReader fileReader, IMessage message, IConversation conversation, IJobManager jobManager)
         {
             _openRouterService = openRouterService;
             _fileReader = fileReader;
             this .messageRepo = message;
             this.conversationRepo = conversation;
+            this.jobManager = jobManager;
         }
 
         public async Task<MessageResponseApiModel> GetChatBotResponse(MessagePostApiModel message,Guid userId)
@@ -74,6 +78,28 @@ namespace CareerSphere.Manager.ChatBotManager
             return response;
         }
 
+        public async Task <List<JobListing>> GetJobByResume(IFormFile resume, Guid userId)
+        {
+            string extractedText;
+
+            using (var stream = resume.OpenReadStream())
+            {
+                extractedText = _fileReader.ExtractTextFromPdf(stream);
+            }
+            var result = await _openRouterService.ExtractJSearchParamsAsync(extractedText);
+
+            if(result == null)
+            {
+                return null;
+            }
+
+            var joblist = await jobManager.GetJobsForResumeAsync(result.Role, result.Location, result.Skills, result.ExperienceYears);
+
+
+            return joblist;
+
+           
+        }
 
     }
 }

@@ -3,6 +3,7 @@ using CareerSphere.Models.UserTableModel;
 using CareerSphere.Models.PostTableModel;
 using CareerSphere.Models.ConnectionTableModel;
 using CareerSphere.Models.MessageTableModel;
+using CareerSphere.Models.EducationTableModel;
 
 
 namespace CareerSphere.Data
@@ -17,7 +18,9 @@ namespace CareerSphere.Data
          public DbSet<Post> Posts { get; set; }
          public DbSet<Connection> Connections { get; set; }
          public DbSet<Conversation> Conversations { get; set; }
-            public DbSet<MessageModel> Messages { get; set; }
+         public DbSet<MessageModel> Messages { get; set; }
+         public DbSet<Education> Educations { get; set; }
+         public DbSet<Experience> Experiences { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,6 +71,23 @@ namespace CareerSphere.Data
                 .HasForeignKey(m => m.conversationId)
                 .OnDelete(DeleteBehavior.Cascade);
                 
+            modelBuilder.Entity<Education>()
+                .HasKey(e => e.educationId);
+
+            modelBuilder.Entity<Education>()
+                .HasOne(e => e.user)
+                .WithMany(u => u.Educations)
+                .HasForeignKey(e => e.userId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Experience>()
+                .HasKey(e => e.experienceId);
+
+            modelBuilder.Entity<Experience>()
+                .HasOne(e => e.user)
+                .WithMany(u => u.Experiences)
+                .HasForeignKey(e => e.userId)
+                .OnDelete(DeleteBehavior.Cascade);
 
                
                

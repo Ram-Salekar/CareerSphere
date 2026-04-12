@@ -12,6 +12,9 @@ using CareerSphere.Services.FileReader;
 using CareerSphere.Manager.ChatBotManager;
 using CareerSphere.Repository.MessageRepos;
 using CareerSphere.Repository.ConversationRepos;
+using CareerSphere.Repository.ExperienceRepos;
+using CareerSphere.Manager.JserviceManager;
+using CareerSphere.Manager.JobManager;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +36,9 @@ builder.Services.AddSingleton<IFileReader, FileReader>();
 builder.Services.AddScoped<IChatBotManager, ChatBotManager>();
 builder.Services.AddTransient<IMessage, MessageRepo>();
 builder.Services.AddTransient<IConversation, ConversationRepo>();
-
+builder.Services.AddScoped<IExperienceRepo, ExperienceRepo>();
+builder.Services.AddScoped<IJservice, JService>();
+builder.Services.AddScoped<IJobManager, JobManager>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Key"];

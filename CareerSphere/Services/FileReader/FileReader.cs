@@ -34,5 +34,33 @@ namespace CareerSphere.Services.FileReader
             return text.ToString();
         }
 
+        public async Task<string> ResumeExtract()
+        {
+            string filePath = "C:\\Users\\ROCK\\source\\repos\\CareerSphere\\CareerSphere\\Prompts\\ResumeExtract.txt";
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"The file at path {filePath} was not found.");
+            }
+
+            using (var reader = new StreamReader(filePath))
+            {
+                return await reader.ReadToEndAsync();
+            }
+        }
+
+        public async Task<string> JSearchParams()
+        {
+            string filePath = "C:\\Users\\ROCK\\source\\repos\\CareerSphere\\CareerSphere\\Prompts\\JSearchParamsPrompt.txt";
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"The file at path {filePath} was not found.");
+            }
+
+            using (var reader = new StreamReader(filePath))
+            {
+                return await reader.ReadToEndAsync();
+            }
+        }
+
     }
 }

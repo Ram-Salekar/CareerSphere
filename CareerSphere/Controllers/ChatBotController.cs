@@ -1,5 +1,6 @@
 ﻿using CareerSphere.ApiModels.ChatBotApiModel;
 using CareerSphere.Manager.ChatBotManager;
+using CareerSphere.Manager.JserviceManager;
 using CareerSphere.Services.AiChatBotService;
 using CareerSphere.Services.FileReader;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +14,12 @@ namespace CareerSphere.Controllers
     public class ChatBotController : Controller
     {
        private readonly IChatBotManager _chatBotManager;
+       
 
-        public ChatBotController(IChatBotManager chatBotManager)
+        public ChatBotController(IChatBotManager chatBotManager, IJservice jservice)
         {
             _chatBotManager = chatBotManager;
+           
 
         }
 
@@ -45,6 +48,12 @@ namespace CareerSphere.Controllers
             
         }
 
-      
+        [HttpPost("api/agent/getjoblistbyresume")]
+        public async Task<IActionResult>GetJobList(IFormFile file)
+        {
+            var result = await _chatBotManager.GetJobByResume(file, Guid.Empty);
+            return Ok(result);
+        }
+
     }
 }
