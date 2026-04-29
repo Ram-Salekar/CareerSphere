@@ -75,7 +75,7 @@ namespace CareerSphere.Services.AiChatBotService
                 ?? "No response from AI.";
         }
 
-        
+
         private async Task<string> SendToOpenRouterAsync(List<AiMessage> messages)
         {
             var models = _configuration
@@ -91,19 +91,19 @@ namespace CareerSphere.Services.AiChatBotService
             {
                 try
                 {
-                   
+
                     var result = await TrySendAsync(messages, model);
-                  
+
                     return result;
                 }
                 catch (TaskCanceledException)
                 {
-                   
+
                     lastException = new Exception($"Model '{model}' timed out.");
                 }
                 catch (Exception ex)
                 {
-                    
+
                     lastException = ex;
                 }
             }
@@ -146,7 +146,7 @@ namespace CareerSphere.Services.AiChatBotService
             };
         }
 
-      
+
         public async Task<string> ResumeAnalyzingAgent(string resume)
         {
             var prompt = await _fileReader.ReadFileAsync();
@@ -194,6 +194,27 @@ namespace CareerSphere.Services.AiChatBotService
 
             return JsonSerializer.Deserialize<JSearchParamsResult>(clean,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        public async Task<string> GenerateCoverLetterAsync(string resumeText, string jobDescription)
+        {
+            var prompt = await _fileReader.CoverLetterPrompt();
+
+            var userContent = $"""
+            RESUME:
+            {resumeText}
+
+            JOB DESCRIPTION:
+            {jobDescription}
+            """;
+
+            var messages = new List<AiMessage>
+            {
+                new AiMessage { role = "system", content = prompt },
+                new AiMessage { role = "user", content = userContent }
+            };
+
+            return await SendToOpenRouterAsync(messages);
         }
     }
 }

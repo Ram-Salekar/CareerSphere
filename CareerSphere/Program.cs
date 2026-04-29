@@ -15,6 +15,7 @@ using CareerSphere.Repository.ConversationRepos;
 using CareerSphere.Repository.ExperienceRepos;
 using CareerSphere.Manager.JserviceManager;
 using CareerSphere.Manager.JobManager;
+using CareerSphere.Manager.InterviewPreparationManager;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,7 @@ builder.Services.AddTransient<IConversation, ConversationRepo>();
 builder.Services.AddScoped<IExperienceRepo, ExperienceRepo>();
 builder.Services.AddScoped<IJservice, JService>();
 builder.Services.AddScoped<IJobManager, JobManager>();
+builder.Services.AddScoped<IInterviewPreparationManager, InterviewPreparationManager>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Key"];

@@ -1,66 +1,77 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using System.Text;
 using UglyToad.PdfPig;
 
 namespace CareerSphere.Services.FileReader
 {
     public class FileReader : IFileReader
     {
-        public async Task<string> ReadFileAsync()
+        private readonly IWebHostEnvironment _env;
+        private readonly ILogger<FileReader> _logger;
+
+        // Cache prompts in memory — no need to read from disk every request
+        private static readonly ConcurrentDictionary<string, string> _promptCache = new();
+
+        public FileReader(IWebHostEnvironment env, ILogger<FileReader> logger)
         {
-            string filePath = "C:\\Users\\ROCK\\source\\repos\\CareerSphere\\CareerSphere\\Prompts\\ResumeAnalysis.txt";
+            _env = env;
+            _logger = logger;
+        }
+
+       
+        private async Task<string> ReadPromptAsync(string fileName)
+        {
+            // Return from cache if already loaded
+            if (_promptCache.TryGetValue(fileName, out var cached))
+                return cached;
+
+            // Build path relative to project root — works on any machine
+            var filePath = Path.Combine(_env.ContentRootPath, "Prompts", fileName);
+
             if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException($"The file at path {filePath} was not found.");
+                _logger.LogError("Prompt file not found: {FilePath}", filePath);
+                throw new FileNotFoundException($"Prompt file not found: {fileName}");
             }
 
-            using (var reader = new StreamReader(filePath))
-            {
-                return await reader.ReadToEndAsync();
-            }
+            var content = await File.ReadAllTextAsync(filePath);
+
+            // Cache it for future requests
+            _promptCache.TryAdd(fileName, content);
+
+            _logger.LogInformation("Prompt loaded and cached: {FileName}", fileName);
+            return content;
         }
+
+       
+        public Task<string> ReadFileAsync() => ReadPromptAsync("ResumeAnalysis.txt");
+        public Task<string> ResumeExtract() => ReadPromptAsync("ResumeExtract.txt");
+        public Task<string> JSearchParams() => ReadPromptAsync("JSearchParamsPrompt.txt");
+        public Task<string> CoverLetterPrompt() => ReadPromptAsync("CoverLetterPrompt.txt");
 
         public string ExtractTextFromPdf(Stream stream)
         {
             var text = new StringBuilder();
-
-            using (var document = PdfDocument.Open(stream))
+            try
             {
+                using var document = PdfDocument.Open(stream);
                 foreach (var page in document.GetPages())
                 {
                     text.AppendLine(page.Text);
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError("PDF extraction failed: {Message}", ex.Message);
+                throw new InvalidOperationException("Failed to extract text from PDF.", ex);
+            }
 
-            return text.ToString();
+            var result = text.ToString().Trim();
+
+            if (string.IsNullOrWhiteSpace(result))
+                throw new InvalidOperationException("PDF appears to be empty or scanned. Please upload a text-based PDF.");
+
+            return result;
         }
-
-        public async Task<string> ResumeExtract()
-        {
-            string filePath = "C:\\Users\\ROCK\\source\\repos\\CareerSphere\\CareerSphere\\Prompts\\ResumeExtract.txt";
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException($"The file at path {filePath} was not found.");
-            }
-
-            using (var reader = new StreamReader(filePath))
-            {
-                return await reader.ReadToEndAsync();
-            }
-        }
-
-        public async Task<string> JSearchParams()
-        {
-            string filePath = "C:\\Users\\ROCK\\source\\repos\\CareerSphere\\CareerSphere\\Prompts\\JSearchParamsPrompt.txt";
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException($"The file at path {filePath} was not found.");
-            }
-
-            using (var reader = new StreamReader(filePath))
-            {
-                return await reader.ReadToEndAsync();
-            }
-        }
-
     }
 }

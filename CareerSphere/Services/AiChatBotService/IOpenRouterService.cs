@@ -11,5 +11,6 @@ namespace CareerSphere.Services.AiChatBotService
         public Task<string> ResumeAnalyzingAgent(string resume);
         public Task<string> GetJobList(string resume, List<JobListing>joblist);
         public Task<JSearchParamsResult> ExtractJSearchParamsAsync(string resumeText);
+        Task<string> GenerateCoverLetterAsync(string resumeText, string jobDescription);
     }
 }
