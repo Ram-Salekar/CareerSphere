@@ -2,6 +2,7 @@
 using CareerSphere.ApiModels.UsersApiModels;
 using CareerSphere.Repository.UserRepoFolder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CareerSphere.Controllers
 {
@@ -16,6 +17,7 @@ namespace CareerSphere.Controllers
         }
 
         [HttpPost ("api/login")]
+        [EnableRateLimiting("AuthPolicy")]
         public async Task<IActionResult> getToken(LoginApiModel detail)
         {
             var token = await _userRepo.getToken(detail);

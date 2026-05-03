@@ -2,6 +2,7 @@
 using CareerSphere.Manager.InterviewPreparationManager;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 namespace CareerSphere.Controllers
@@ -19,6 +20,7 @@ namespace CareerSphere.Controllers
         }
 
         [HttpPost("generate")]
+        [EnableRateLimiting("AiPolicy")]
         public async Task<IActionResult> GenerateCoverLetter(
             [FromForm] CoverLetterRequestModel request)
         {
