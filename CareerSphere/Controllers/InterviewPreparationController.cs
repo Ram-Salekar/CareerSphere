@@ -19,7 +19,7 @@ namespace CareerSphere.Controllers
 
         }
 
-        [HttpPost("generate")]
+        [HttpPost("api/generate")]
         [EnableRateLimiting("AiPolicy")]
         public async Task<IActionResult> GenerateCoverLetter(
             [FromForm] CoverLetterRequestModel request)

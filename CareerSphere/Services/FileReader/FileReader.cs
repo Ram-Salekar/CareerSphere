@@ -48,6 +48,8 @@ namespace CareerSphere.Services.FileReader
         public Task<string> ResumeExtract() => ReadPromptAsync("ResumeExtract.txt");
         public Task<string> JSearchParams() => ReadPromptAsync("JSearchParamsPrompt.txt");
         public Task<string> CoverLetterPrompt() => ReadPromptAsync("CoverLetterPrompt.txt");
+        public Task<string> CareerAdvicePrompt() => ReadPromptAsync("MasterPrompt.txt");
+        public Task<string> InterviewQuestionsPrompt() => ReadPromptAsync("InterviewQuestionsPrompt.txt");
 
         public string ExtractTextFromPdf(Stream stream)
         {

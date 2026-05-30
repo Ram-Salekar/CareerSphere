@@ -7,6 +7,8 @@
         public Task<string> ResumeExtract();
         public Task<string> JSearchParams();
         public Task<string> CoverLetterPrompt();
+        public Task<string> CareerAdvicePrompt();
+        Task<string> InterviewQuestionsPrompt();
 
     }
 }

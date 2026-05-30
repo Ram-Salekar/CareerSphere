@@ -1,4 +1,5 @@
 using CareerSphere.Data;
+using CareerSphere.Manager.CareerAgentManager;
 using CareerSphere.Manager.ChatBotManager;
 using CareerSphere.Manager.InterviewPreparationManager;
 using CareerSphere.Manager.JobManager;
@@ -11,6 +12,8 @@ using CareerSphere.Repository.PostRepos;
 using CareerSphere.Repository.UserRepoFolder;
 using CareerSphere.Services;
 using CareerSphere.Services.AiChatBotService;
+using CareerSphere.Services.CareerAgentService;
+using CareerSphere.Services.CarrerAgentService;
 using CareerSphere.Services.FileReader;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
@@ -44,6 +47,8 @@ builder.Services.AddScoped<IExperienceRepo, ExperienceRepo>();
 builder.Services.AddScoped<IJservice, JService>();
 builder.Services.AddScoped<IJobManager, JobManager>();
 builder.Services.AddScoped<IInterviewPreparationManager, InterviewPreparationManager>();
+builder.Services.AddScoped<ICareerAgentService, CareerAgentService>();
+builder.Services.AddScoped<ICareerAgentManager, CareerAgentManager>();
 builder.Services.AddTransient<GlobalExceptionHandler>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -129,6 +134,11 @@ builder.Services.AddSwaggerGen(options =>
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Description = "Enter your JWT token here. Example: eyJhbGci..."
+    });
+    options.MapType<IFormFile>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = "binary"  
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement

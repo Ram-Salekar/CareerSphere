@@ -1,4 +1,5 @@
-﻿using CareerSphere.ApiModels.ChatBotApiModel;
+﻿using CareerSphere.ApiModels;
+using CareerSphere.ApiModels.ChatBotApiModel;
 using CareerSphere.ApiModels.ChatBotModels;
 using CareerSphere.ApiModels.JSearchApiModels;
 using CareerSphere.Repository.MessageRepos;
@@ -216,5 +217,72 @@ namespace CareerSphere.Services.AiChatBotService
 
             return await SendToOpenRouterAsync(messages);
         }
+
+        public async Task<string> SendRawAsync(List<AiMessage> messages)
+        {
+            return await SendToOpenRouterAsync(messages);
+        }
+
+        public async Task<InterviewQuestionResult> GenerateInterviewQuestionsAsync(
+    string role)
+        {
+            var prompt = await _fileReader.InterviewQuestionsPrompt();
+
+            var messages = new List<AiMessage>
+    {
+        new AiMessage { role = "system", content = prompt },
+        new AiMessage
+        {
+            role    = "user",
+            content = $"Generate interview questions for: {role}"
+        }
+    };
+
+            
+            return await GetStructuredResponseAsync<InterviewQuestionResult>(messages);
+        }
+
+        
+        private async Task<T> GetStructuredResponseAsync<T>(
+            List<AiMessage> messages)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                var raw = await SendToOpenRouterAsync(messages);
+
+                var clean = raw
+                    .Replace("```json", "")
+                    .Replace("```", "")
+                    .Trim();
+
+                try
+                {
+                    var result = JsonSerializer.Deserialize<T>(clean,
+                        new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+
+                    if (result != null) return result;
+                }
+                catch
+                {
+                    
+
+                    // Tell AI to fix itself
+                    messages.Add(new AiMessage
+                    {
+                        role = "user",
+                        content = "Your response was not valid JSON. " +
+                                  "Return valid JSON only. No markdown. No extra text."
+                    });
+                }
+            }
+
+            throw new Exception(
+                "AI failed to return valid JSON after 3 attempts.");
+        }
+
+
     }
 }
