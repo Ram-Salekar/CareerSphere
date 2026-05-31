@@ -26,7 +26,7 @@ namespace CareerSphere.Manager.CareerAgentManager
             AgentQueryRequest request,
             Guid userId)
         {
-            // Validate at least one input provided
+            
             if (string.IsNullOrWhiteSpace(request.Prompt)
                 && request.ResumeFile == null)
             {
@@ -35,7 +35,7 @@ namespace CareerSphere.Manager.CareerAgentManager
                     "or upload your resume.");
             }
 
-            // Extract resume text if file provided
+           
             string? resumeText = null;
             if (request.ResumeFile != null)
             {
@@ -57,7 +57,7 @@ namespace CareerSphere.Manager.CareerAgentManager
                     resumeText.Length);
             }
 
-            // Run ReAct agent
+           
             _logger.LogInformation(
                 "Starting ReAct agent for user {UserId}", userId);
 
@@ -65,7 +65,7 @@ namespace CareerSphere.Manager.CareerAgentManager
                 request.Prompt,
                 resumeText);
 
-            // Return only what user needs
+          
             return new AgentUserResponse
             {
                 Response = agentResult.FinalAnswer,

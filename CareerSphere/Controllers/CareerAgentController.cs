@@ -20,7 +20,8 @@ namespace CareerSphere.Controllers
         [HttpPost("api/analyze")]
         public async Task<IActionResult> AnalyzeResume([FromForm] AgentQueryRequest agentQuery)
         {
-         return (IActionResult)await careerAgentManager.RunAgentAsync(agentQuery, Guid.NewGuid());
+         var result = await careerAgentManager.RunAgentAsync(agentQuery, Guid.NewGuid());
+            return Ok(result);
         }
     }
 }

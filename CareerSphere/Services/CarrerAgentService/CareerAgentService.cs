@@ -39,7 +39,7 @@ namespace CareerSphere.Services.CareerAgentService
             _logger.LogInformation(
                 "ReAct Agent started. Goal: {Goal}", userGoal);
 
-            // Load master agent system prompt
+           
             var systemPrompt = await _fileReader.CareerAdvicePrompt();
 
             // Build initial user message
@@ -82,7 +82,7 @@ namespace CareerSphere.Services.CareerAgentService
                 var action = ParseAction(aiResponse);
                 var finalAnswer = ParseFinalAnswer(aiResponse);
 
-                // ─── CASE 1: Master has final answer ───
+              
                 if (!string.IsNullOrWhiteSpace(finalAnswer))
                 {
                     _logger.LogInformation(
@@ -350,11 +350,7 @@ namespace CareerSphere.Services.CareerAgentService
             return await _openRouterService.SendRawAsync(messages);
         }
 
-        // =========================================
-        // 🔹 HELPERS
-        // =========================================
-
-        // Build initial message combining goal + resume
+       
         private string BuildUserMessage(
             string? userGoal,
             string? resumeText)

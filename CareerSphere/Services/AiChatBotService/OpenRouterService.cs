@@ -45,8 +45,7 @@ namespace CareerSphere.Services.AiChatBotService
 
             httpRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", apiKey);
-            httpRequest.Headers.Add("HTTP-Referer", "https://CareerSphere.com");
-            httpRequest.Headers.Add("X-Title", "CareerSphere");
+           
             httpRequest.Content =
                 new StringContent(json, Encoding.UTF8, "application/json");
 
